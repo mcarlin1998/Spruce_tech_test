@@ -9,6 +9,7 @@ export const Main = () => {
     [undefined, undefined, undefined],
   ]);
   const [player, setPlayer] = useState<string>("X");
+  const [winner, setWinner] = useState<string | null>(null);
 
   function handleClick(
     rowPos: number,
@@ -31,12 +32,80 @@ export const Main = () => {
 
       // Update the board with the player's shape
       boardCopy[rowPos][colPos] = shape;
+      const result = checkWinner(boardCopy, shape);
+
+      if (result) {
+        setWinner(playerCheck);
+      } else {
+        setPlayer(shape === "X" ? "O" : "X");
+      }
 
       // Return the updated board
       updatedBoard = boardCopy;
       return boardCopy;
     });
     return updatedBoard;
+  }
+
+  function checkWinner(boardArr, shape) {
+    const lines = [
+      // Horizontal winning combinations
+      [
+        [0, 0],
+        [0, 1],
+        [0, 2],
+      ],
+      [
+        [1, 0],
+        [1, 1],
+        [1, 2],
+      ],
+      [
+        [2, 0],
+        [2, 1],
+        [2, 2],
+      ],
+
+      // Vertical winning combinations
+      [
+        [0, 0],
+        [1, 0],
+        [2, 0],
+      ],
+      [
+        [0, 1],
+        [1, 1],
+        [2, 1],
+      ],
+      [
+        [0, 2],
+        [1, 2],
+        [2, 2],
+      ],
+
+      // Diagonal winning combinations
+      [
+        [0, 0],
+        [1, 1],
+        [2, 2],
+      ],
+      [
+        [0, 2],
+        [1, 1],
+        [2, 0],
+      ],
+    ];
+    for (let line of lines) {
+      const [a, b, c] = line;
+      if (
+        boardArr[a[0]][a[1]] === shape &&
+        boardArr[b[0]][b[1]] === shape &&
+        boardArr[c[0]][c[1]] === shape
+      ) {
+        return true;
+      }
+    }
+    return false;
   }
 
   return (
@@ -60,6 +129,18 @@ export const Main = () => {
           </div>
         ))}
       </div>
+      {winner ? (
+        <div className="mt-10 flex flex-col items-center">
+          <div>Winner is Player {winner}</div>
+
+          <button
+            className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow mt-10"
+            // onClick={() => handleReset()}
+          >
+            Play Again?
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 };
