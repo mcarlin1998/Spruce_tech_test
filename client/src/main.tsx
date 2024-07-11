@@ -108,6 +108,18 @@ export const Main = () => {
     return false;
   }
 
+  function handleReset() {
+    //Create a copy of the current state and adjust all values to be 'undefined' in the case that the grid is any size from 3 to 15
+    setBoard((prevBoard) => {
+      let boardResetCopy = prevBoard.map((row) => row.map(() => undefined));
+      return boardResetCopy;
+    });
+    //set Winner state to false
+    setWinner(null);
+    //Set default player back to playerX
+    setPlayer("X");
+  }
+
   return (
     <div className="flex flex-col mt-10 items-center gap-10">
       <div className="font-bold text-2xl">Tic Tac Toe</div>
@@ -135,7 +147,7 @@ export const Main = () => {
 
           <button
             className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow mt-10"
-            // onClick={() => handleReset()}
+            onClick={() => handleReset()}
           >
             Play Again?
           </button>
