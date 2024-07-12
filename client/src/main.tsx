@@ -11,12 +11,10 @@ export const Main = () => {
   const [player, setPlayer] = useState<string>("X");
   const [winner, setWinner] = useState<string | null>(null);
   const [gridSize, setGridSize] = useState<number>(3);
+  const [winLength, setWinLength] = useState<number>(3);
 
-  function handleClick(
-    rowPos: number,
-    colPos: number,
-    playerCheck: string
-  ): (XorO | undefined)[][] {
+  function handleClick(rowPos: number, colPos: number, playerCheck: string) {
+    console.log(rowPos, colPos, playerCheck);
     const shape: XorO = playerCheck === "X" ? "X" : "O";
 
     let updatedBoard: (XorO | undefined)[][] = [];
@@ -48,56 +46,65 @@ export const Main = () => {
     return updatedBoard;
   }
 
-  function checkWinner(boardArr, shape) {
-    const lines = [
-      // Horizontal winning combinations
-      [
-        [0, 0],
-        [0, 1],
-        [0, 2],
-      ],
-      [
-        [1, 0],
-        [1, 1],
-        [1, 2],
-      ],
-      [
-        [2, 0],
-        [2, 1],
-        [2, 2],
-      ],
+  function generateWinningLines(gridSize: number) {
+    const lines: number[][][] = [];
 
-      // Vertical winning combinations
-      [
-        [0, 0],
-        [1, 0],
-        [2, 0],
-      ],
-      [
-        [0, 1],
-        [1, 1],
-        [2, 1],
-      ],
-      [
-        [0, 2],
-        [1, 2],
-        [2, 2],
-      ],
+    // Rows
+    //Loops over each column index in the row where winLength can begin
+    for (let i = 0; i < gridSize; i++) {
+      for (let j = 0; j <= gridSize - winLength; j++) {
+        const row: number[][] = [];
+        for (let k = 0; k < winLength; k++) {
+          row.push([i, j + k]);
+        }
+        lines.push(row);
+      }
+    }
 
-      // Diagonal winning combinations
-      [
-        [0, 0],
-        [1, 1],
-        [2, 2],
-      ],
-      [
-        [0, 2],
-        [1, 1],
-        [2, 0],
-      ],
-    ];
+    // Columns
+    for (let j = 0; j < gridSize; j++) {
+      for (let i = 0; i <= gridSize - winLength; i++) {
+        const col: number[][] = [];
+        for (let k = 0; k < winLength; k++) {
+          col.push([i + k, j]);
+        }
+        lines.push(col);
+      }
+    }
+
+    // Diagonals (Top-Left to Bottom-Right)
+    //Loops over possible starting points for the row and column for the Diagonal lines
+    for (let i = 0; i <= gridSize - winLength; i++) {
+      for (let j = 0; j <= gridSize - winLength; j++) {
+        const diag1: number[][] = [];
+        for (let k = 0; k < winLength; k++) {
+          diag1.push([i + k, j + k]);
+        }
+        lines.push(diag1);
+      }
+    }
+
+    // Diagonals (Bottom-Left to Top-Right)
+    //Loops over possible starting points for the row and column for the opposite Diagonal lines
+    for (let i = 0; i <= gridSize - winLength; i++) {
+      for (let j = winLength - 1; j < gridSize; j++) {
+        const diag2: number[][] = [];
+        for (let k = 0; k < winLength; k++) {
+          diag2.push([i + k, j - k]);
+        }
+        lines.push(diag2);
+      }
+    }
+
+    return lines;
+  }
+
+  function checkWinner(boardArr: (XorO | undefined)[][], shape: string) {
+    const lines = generateWinningLines(gridSize);
     for (let line of lines) {
+      //let a, b, c equal the a winning combo for the gridSize
       const [a, b, c] = line;
+      //If all 3 cells options match the shape then return true
       if (
         boardArr[a[0]][a[1]] === shape &&
         boardArr[b[0]][b[1]] === shape &&
@@ -121,25 +128,32 @@ export const Main = () => {
     setPlayer("X");
   }
 
-  function handleGridChange(e) {
+  function handleGridChange(e: React.ChangeEvent<HTMLInputElement>) {
     e.preventDefault();
-    const gridChangeValue = e.target.value;
+    //store value as a number
+    const gridChangeValue = parseInt(e.target.value);
+    //If the value isnt between 3 and 15 do nothing (Should return an error prompt notifying user)
     if (gridChangeValue < 3 || gridChangeValue > 15) {
       return;
     }
+    //Set the adjusted size in state and then run the generate function
     setGridSize(gridChangeValue);
     generateBoard(gridChangeValue);
   }
 
   function generateBoard(newGridSize: number) {
+    //Intialise an empty array to store new board size
     let boardToSet: undefined[][] = [];
+    //Create a loop that will run as long as its less that newGridSize
+    // TODO: Make this more efficient - array methods could probably remove the need for a loop.
     for (let i = 0; i < newGridSize; i++) {
+      //Push an empty array which will store a row of undefined
       boardToSet.push([]);
+      //Add as many undefined cells as the value of newGridSize
       for (let o = 0; o < newGridSize; o++) {
         boardToSet[i].push(undefined);
       }
     }
-
     setBoard(boardToSet);
   }
 
