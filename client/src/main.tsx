@@ -12,6 +12,10 @@ export const Main = () => {
   const [winner, setWinner] = useState<string | null>(null);
   const [gridSize, setGridSize] = useState<number>(3);
   const [winLength, setWinLength] = useState<number>(3);
+  const [winCount, setWinCount] = useState<{ X: number; O: number }>({
+    X: 0,
+    O: 0,
+  });
 
   function handleClick(rowPos: number, colPos: number, playerCheck: string) {
     console.log(rowPos, colPos, playerCheck);
@@ -35,6 +39,19 @@ export const Main = () => {
 
       if (result) {
         setWinner(playerCheck);
+        if (playerCheck === "X") {
+          // Increment X's win count
+          setWinCount((prevWinCount) => ({
+            ...prevWinCount,
+            X: prevWinCount.X + 1,
+          }));
+        } else if (playerCheck === "O") {
+          // Increment O's win count
+          setWinCount((prevWinCount) => ({
+            ...prevWinCount,
+            O: prevWinCount.O + 1,
+          }));
+        }
       } else {
         setPlayer(shape === "X" ? "O" : "X");
       }
@@ -105,6 +122,7 @@ export const Main = () => {
       //let a, b, c equal the a winning combo for the gridSize
       const [a, b, c] = line;
       //If all 3 cells options match the shape then return true
+      // TODO: not dynamic if the win length is not 3
       if (
         boardArr[a[0]][a[1]] === shape &&
         boardArr[b[0]][b[1]] === shape &&
@@ -160,6 +178,7 @@ export const Main = () => {
   return (
     <div className="flex flex-col mt-10 items-center gap-10">
       <div className="font-bold text-2xl">Tic Tac Toe</div>
+
       <div className="flex flex-col gap-1">
         {board.map((row, rowPos: number) => (
           <div className="flex gap-1" key={rowPos}>
@@ -172,37 +191,54 @@ export const Main = () => {
                   colPos={colPos}
                   column={column}
                   player={player}
+                  winner={winner}
                 />
               );
             })}
           </div>
         ))}
       </div>
-      {winner ? (
-        <div className="mt-10 flex flex-col items-center">
-          <div>Winner is Player {winner}</div>
+      <div>
+        {winner ? (
+          <div className="mt-10 flex flex-col items-center">
+            <div>Winner is Player {winner}</div>
 
-          <button
-            className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow mt-10"
-            onClick={() => handleReset()}
-          >
-            Play Again?
-          </button>
+            <button
+              className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow mt-10"
+              onClick={() => handleReset()}
+            >
+              Play Again?
+            </button>
+          </div>
+        ) : null}
+        <div className="flex flex-row mt-10 text-2xl">
+          <div className="flex-col mr-5">
+            <h1>PlayerX</h1>
+            <span className="flex justify-center">
+              <h3 className="items-center">{winCount.X}</h3>
+            </span>
+          </div>
+          <div className="flex-col">
+            <h1>PlayerO</h1>
+            <span className="flex justify-center">
+              <h3>{winCount.O}</h3>
+            </span>
+          </div>
         </div>
-      ) : null}
-      <div className="flex text-xl mt-10 justify-center">
-        <h1>Grid Size:</h1>
-        <input
-          type="number"
-          id="gridSizeInput"
-          name="gridSize"
-          placeholder="Grid Size"
-          defaultValue={gridSize}
-          onChange={handleGridChange}
-          min="3"
-          max="15"
-          className="ml-5 text-center"
-        />
+        <div className="flex text-xl mt-10 justify-center">
+          <h1>Grid Size:</h1>
+          <input
+            type="number"
+            id="gridSizeInput"
+            name="gridSize"
+            placeholder="Grid Size"
+            defaultValue={gridSize}
+            onChange={handleGridChange}
+            min="3"
+            max="15"
+            className="ml-5 text-center"
+          />
+        </div>
       </div>
     </div>
   );

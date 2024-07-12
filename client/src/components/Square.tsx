@@ -7,12 +7,13 @@ export default function Square({
   colPos,
   column,
   player,
+  winner,
 }: SquareValues) {
   return (
     <div
       className="border-2 border-gray-900 w-10 h-10 cursor-pointer items-center justify-center text-2xl font-bold flex"
       onClick={() => {
-        handleClick(rowPos, colPos, player);
+        !winner && handleClick(rowPos, colPos, player);
       }}
       key={colPos}
     >

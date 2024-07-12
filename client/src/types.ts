@@ -1,6 +1,7 @@
 export type XorO = "X" | "O";
 
 export type SquareValues = {
+  winner: string | null;
   handleClick: (
     rowPos: number,
     colPos: number,
