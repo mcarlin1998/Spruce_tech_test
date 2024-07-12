@@ -11,11 +11,11 @@ export const Main = () => {
   const [player, setPlayer] = useState<string>("X");
   const [winner, setWinner] = useState<string | null>(null);
   const [gridSize, setGridSize] = useState<number>(3);
-  const [winLength, setWinLength] = useState<number>(3);
+  const [winLength, setWinLength] = useState<number>(3); //Should be developed to allow user to set the possible win length from an input
   const [winCount, setWinCount] = useState<{ X: number; O: number }>({
     X: 0,
     O: 0,
-  });
+  }); // -- change this to store returned json from getUserData()
 
   function handleClick(rowPos: number, colPos: number, playerCheck: string) {
     console.log(rowPos, colPos, playerCheck);
@@ -174,6 +174,17 @@ export const Main = () => {
     }
     setBoard(boardToSet);
   }
+
+  // function getUserData(){
+  //   try{
+  //     fetch("api address")
+  //     store data in state
+  //   }catch(err){
+
+  //     console.log(error)
+  //   }
+
+  // }
 
   return (
     <div className="flex flex-col mt-10 items-center gap-10">
