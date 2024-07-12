@@ -10,6 +10,7 @@ export const Main = () => {
   ]);
   const [player, setPlayer] = useState<string>("X");
   const [winner, setWinner] = useState<string | null>(null);
+  const [gridSize, setGridSize] = useState<number>(3);
 
   function handleClick(
     rowPos: number,
@@ -120,6 +121,28 @@ export const Main = () => {
     setPlayer("X");
   }
 
+  function handleGridChange(e) {
+    e.preventDefault();
+    const gridChangeValue = e.target.value;
+    if (gridChangeValue < 3 || gridChangeValue > 15) {
+      return;
+    }
+    setGridSize(gridChangeValue);
+    generateBoard(gridChangeValue);
+  }
+
+  function generateBoard(newGridSize: number) {
+    let boardToSet: undefined[][] = [];
+    for (let i = 0; i < newGridSize; i++) {
+      boardToSet.push([]);
+      for (let o = 0; o < newGridSize; o++) {
+        boardToSet[i].push(undefined);
+      }
+    }
+
+    setBoard(boardToSet);
+  }
+
   return (
     <div className="flex flex-col mt-10 items-center gap-10">
       <div className="font-bold text-2xl">Tic Tac Toe</div>
@@ -153,6 +176,20 @@ export const Main = () => {
           </button>
         </div>
       ) : null}
+      <div className="flex text-xl mt-10 justify-center">
+        <h1>Grid Size:</h1>
+        <input
+          type="number"
+          id="gridSizeInput"
+          name="gridSize"
+          placeholder="Grid Size"
+          defaultValue={gridSize}
+          onChange={handleGridChange}
+          min="3"
+          max="15"
+          className="ml-5 text-center"
+        />
+      </div>
     </div>
   );
 };
